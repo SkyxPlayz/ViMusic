@@ -578,7 +578,7 @@ fun Queue(
                                                     menuState.hide()
                                                     addToPlaylist(
                                                         playlistPreview.playlist,
-                                                        playlistPreview.songCount
+                                                        playlistPreview.songCount, 0
                                                     )
                                                 }
                                             )
