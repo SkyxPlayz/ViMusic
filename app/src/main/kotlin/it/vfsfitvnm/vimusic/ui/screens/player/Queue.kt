@@ -579,6 +579,11 @@ fun Queue(
                                                     addToPlaylist(
                                                         playlistPreview.playlist,
                                                         playlistPreview.songCount, 0
+                                                        // from:
+onAddToPlaylist(menuPlaylist, playlistPreview.songCount)
+
+// to:
+onAddToPlaylist(menuPlaylist, 0)
                                                     )
                                                 }
                                             )
