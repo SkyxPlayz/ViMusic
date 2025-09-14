@@ -397,8 +397,8 @@ fun MediaItemMenu(
                                 playlistPreview.songCount
                             ),
                             onClick = {
-                                onDismiss()
-                                onAddToPlaylist(playlistPreview.playlist, playlistPreview.songCount)
+                            onDismiss()
+                               onAddToPlaylist(playlistPreview.playlist, 0)
                             }
                         )
                     }
