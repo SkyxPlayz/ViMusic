@@ -1,21 +1,62 @@
-name: CI
+name: Android CI (manual sdk)
 
-on: push
+on:
+  push:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+
     steps:
-      - uses: actions/checkout@v3
-      - name: set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: "11"
-          distribution: "temurin"
-          cache: gradle
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug
-      - uses: actions/upload-artifact@v1
-        with:
-          name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Setup JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Install minimal packages (wget unzip) and Android cmdline-tools
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y --no-install-recommends wget unzip
+        SDKROOT="$HOME/android-sdk"
+        mkdir -p "$SDKROOT/cmdline-tools"
+        cd "$HOME"
+        # download latest command line tools
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-latest.zip -O cmdline-tools.zip
+        unzip -q cmdline-tools.zip -d "$SDKROOT/cmdline-tools"
+        rm cmdline-tools.zip
+        # move into expected layout (cmdline-tools/latest)
+        if [ -d "$SDKROOT/cmdline-tools/cmdline-tools" ]; then
+          mv "$SDKROOT/cmdline-tools/cmdline-tools" "$SDKROOT/cmdline-tools/latest"
+        else
+          # some zips extract directly into bins; try to normalize
+          mkdir -p "$SDKROOT/cmdline-tools/latest"
+          mv "$SDKROOT/cmdline-tools/"* "$SDKROOT/cmdline-tools/latest/" 2>/dev/null || true
+        fi
+        export ANDROID_SDK_ROOT="$SDKROOT"
+        export PATH="$SDKROOT/cmdline-tools/latest/bin:$PATH"
+        yes | sdkmanager --sdk_root="$SDKROOT" --licenses || true
+        # install essentials (adjust versions if your project needs different API/build-tools)
+        sdkmanager --sdk_root="$SDKROOT" "platform-tools" "platforms;android-29" "build-tools;29.0.3"
+      shell: bash
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Build debug APK (no-daemon, lower memory usage)
+      run: ./gradlew assembleDebug --no-daemon --console=plain
+      env:
+        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
+        
