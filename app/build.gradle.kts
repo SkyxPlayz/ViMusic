@@ -198,4 +198,6 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     detektPlugins(libs.detekt.compose)
     detektPlugins(libs.detekt.formatting)
+    implementation 'com.google.code.gson:gson:2.10.1'
+
 }
