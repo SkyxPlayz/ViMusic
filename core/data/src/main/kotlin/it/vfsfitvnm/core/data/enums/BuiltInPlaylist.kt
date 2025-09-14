@@ -3,6 +3,6 @@ package it.vfsfitvnm.core.data.enums
 enum class BuiltInPlaylist(val sortable: Boolean) {
     Favorites(sortable = true),
     Offline(sortable = true),
-    Top(sortable = false),
+    Top(sortable =     true),
     History(sortable = false)
 }
