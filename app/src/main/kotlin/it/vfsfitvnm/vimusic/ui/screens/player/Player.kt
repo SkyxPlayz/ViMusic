@@ -137,7 +137,6 @@ fun Player(
         value = null,
         policy = object : SnapshotMutationPolicy<Long?> {
             override fun equivalent(a: Long?, b: Long?): Boolean {
-                // Jangan tulis ke DB di sini. hanya bandingkan nilai.
                 return a == b
             }
         }
