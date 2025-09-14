@@ -133,19 +133,15 @@ fun Player(
     var shouldBePlaying by remember(binder) { mutableStateOf(binder?.player?.shouldBePlaying == true) }
 
     var likedAt by remember(mediaItem) {
-        mutableStateOf(
-            value = null,
-            policy = object : SnapshotMutationPolicy<Long?> {
-                override fun equivalent(a: Long?, b: Long?): Boolean {
-                    mediaItem?.mediaId?.let { mediaId ->
-                        query {
-                            Database.instance.like(mediaId, b)
-                        }
-                    }
-                    return a == b
-                }
+    mutableStateOf(
+        value = null,
+        policy = object : SnapshotMutationPolicy<Long?> {
+            override fun equivalent(a: Long?, b: Long?): Boolean {
+                // Jangan tulis ke DB di sini. hanya bandingkan nilai.
+                return a == b
             }
-        )
+        }
+    )
     }
 
     LaunchedEffect(mediaItem) {
