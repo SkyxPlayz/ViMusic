@@ -577,9 +577,7 @@ fun Queue(
                                                 onClick = 
                                                     menuState.hide()
                                                 addToPlaylist(
-                                                    playlistPreview.playlist, 0 
-                                                    // masukin lagu baru ke index paling atas
-                                                )
+                                                    playlistPreview.playlist, 0)
                                                 }
                                                     )
                                                 }
