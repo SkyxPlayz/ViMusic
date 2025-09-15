@@ -3,3 +3,10 @@
       with:
         name: my-app-build
         path: ./downloaded-build/
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-app-build
+        path: ./dist/my-app/
+        retention-days: 30
