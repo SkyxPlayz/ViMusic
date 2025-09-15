@@ -200,5 +200,6 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
 
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("io.ktor:ktor-http:2.3.5")
 
 }
