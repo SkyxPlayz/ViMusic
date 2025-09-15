@@ -566,34 +566,32 @@ fun Queue(
                                             Spacer(modifier = Modifier.height(160.dp))
 
                                         playlistPreviews?.forEach { playlistPreview ->
-                                            MenuEntry(
-                                                icon = R.drawable.playlist,
-                                                text = playlistPreview.playlist.name,
-                                                secondaryText = pluralStringResource(
-                                                    id = R.plurals.song_count_plural,
-                                                    count = playlistPreview.songCount,
-                                                    playlistPreview.songCount
-                                                ),
-                                                onClick = {
-                                                    menuState.hide()
-                                                addToPlaylist(playlistPreview.playlist, 0)
-                                                       }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            .background(colorPalette.background1)
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
+    MenuEntry(
+        icon = R.drawable.playlist,
+        text = playlistPreview.playlist.name,
+        secondaryText = pluralStringResource(
+            id = R.plurals.song_count_plural,
+            count = playlistPreview.songCount,
+            playlistPreview.songCount
+        ),
+        onClick = {
+            menuState.hide()
+            addToPlaylist(
+                playlistPreview.playlist,
+                0 // masukin lagu baru ke index paling atas
+            )
         }
-    }
+    )
 }
 
+// pastikan blok ini diakhiri dengan benar
+Box(
+    modifier = Modifier
+        .background(colorPalette.background1)
+        .padding(horizontal = 16.dp, vertical = 8.dp)
+) {
+    // isi konten box kalau ada, kalau kosong biarin {} aja
+}
 @JvmInline
 private value class ContentType private constructor(val value: Int) {
     companion object {
