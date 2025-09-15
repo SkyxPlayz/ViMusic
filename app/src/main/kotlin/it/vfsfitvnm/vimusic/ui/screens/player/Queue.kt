@@ -574,13 +574,13 @@ fun Queue(
                                                     count = playlistPreview.songCount,
                                                     playlistPreview.songCount
                                                 ),
-                                                onClick = {
+                                                onClick = 
                                                     menuState.hide()
-                                                    addToPlaylist(
-                                                        playlistPreview.playlist,
-                                                        playlistPreview.songCount, 0
-                                                        onAddToPlaylist(menuPlaylist, playlistPreview.songCount)
-                                                        onAddToPlaylist(menuPlaylist, 0)
+                                                addToPlaylist(
+                                                    playlistPreview.playlist, 0 
+                                                    // masukin lagu baru ke index paling atas
+                                                )
+                                                }
                                                     )
                                                 }
                                             )
