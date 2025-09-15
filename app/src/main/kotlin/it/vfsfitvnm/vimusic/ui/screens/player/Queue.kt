@@ -576,9 +576,8 @@ fun Queue(
                                                 ),
                                                 onClick = 
                                                     menuState.hide()
-                                                addToPlaylist(
-                                                    playlistPreview.playlist, 0)
-                                                }
+                                                addToPlaylist(playlistPreview.playlist, 0)
+                                                       }
                                                     )
                                                 }
                                             )
