@@ -591,7 +591,7 @@ fun Queue(
                                             }
 
                             }
-                            .background(color.black)
+                                    Modifier.background(colorPalette.background1)
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                                 }
                 }
@@ -601,6 +601,12 @@ fun Queue(
 }
 
         @JvmInline
-        // taruh di paling atas atau bawah Queue.kt, tapi DI LUAR fungsi composable
-value class QueueItemId(val id: String)
+private value class ContentType private constructor(val value: Int) {
+    companion object {
+        val Window = ContentType(0)
+        val Divider = ContentType(1)
+        val Suggestion = ContentType(2)
+        val Placeholder = ContentType(3)
+    }
+}
 
