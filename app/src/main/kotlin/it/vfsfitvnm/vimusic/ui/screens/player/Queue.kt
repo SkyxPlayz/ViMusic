@@ -565,23 +565,21 @@ fun Queue(
                                         if (playlistPreviews?.isEmpty() == true)
                                             Spacer(modifier = Modifier.height(160.dp))
 
-                                        playlistPreviews?.forEach { playlistPreview ->
-                                            MenuEntry(
-                                                icon = R.drawable.playlist,
-                                                text = playlistPreview.playlist.name,
-                                                secondaryText = pluralStringResource(
-                                                    id = R.plurals.song_count_plural,
-                                                    count = (playlistPreview.songCount), 0)
-                                                    (playlistPreview.songCount), 0)
-                                                ),
-                                                onClick = {
-                                                    menuState.hide()
-                                                    addToPlaylist(
-                                                        (playlistPreview.playlist), 0)
-                                                        (playlistPreview.songCount), 0)
-                                                    )
-                                                }
-                                            )
+                                            playlistPreviews?.forEach { playlistPreview ->
+    MenuEntry(
+        icon = R.drawable.playlist,
+        text = playlistPreview.playlist.name,
+        secondaryText = pluralStringResource(
+            R.plurals.song_count_plural,
+            playlistPreview.songCount,
+            playlistPreview.songCount
+        ),
+        onClick = {
+            menuState.hide()
+            addToPlaylist(playlistPreview.playlist, 0)
+        }
+    )
+                                            }
                                         }
                                     }
                                 }
