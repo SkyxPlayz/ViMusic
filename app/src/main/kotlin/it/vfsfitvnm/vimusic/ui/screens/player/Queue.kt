@@ -571,14 +571,14 @@ fun Queue(
                                                 text = playlistPreview.playlist.name,
                                                 secondaryText = pluralStringResource(
                                                     id = R.plurals.song_count_plural,
-                                                    count = playlistPreview.songCount, 0
-                                                    playlistPreview.songCount, 0
+                                                    count = (playlistPreview.songCount), 0)
+                                                    (playlistPreview.songCount), 0)
                                                 ),
                                                 onClick = {
                                                     menuState.hide()
                                                     addToPlaylist(
-                                                        playlistPreview.playlist, 0
-                                                        playlistPreview.songCount, 0
+                                                        (playlistPreview.playlist), 0)
+                                                        (playlistPreview.songCount), 0)
                                                     )
                                                 }
                                             )
