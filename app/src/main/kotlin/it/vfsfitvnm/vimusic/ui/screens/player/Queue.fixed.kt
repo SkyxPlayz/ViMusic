@@ -600,5 +600,7 @@ fun Queue(
     }
 }
 
-        {@JvmInline}
+        @JvmInline
+        // taruh di paling atas atau bawah Queue.kt, tapi DI LUAR fungsi composable
+value class QueueItemId(val id: String)
 
