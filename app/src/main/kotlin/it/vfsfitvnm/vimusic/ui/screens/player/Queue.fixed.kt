@@ -599,12 +599,10 @@ fun Queue(
         }
     }
 }
-        @JvmInline
-value class ContentType private constructor(val value: Int) {
+
+@JvmInline
+value class QueueState(val value: Int) {
     companion object {
-        val Window = ContentType(0)
-        val Divider = ContentType(1)
-        val Suggestion = ContentType(2)
-        val Placeholder = ContentType(3)
+        val Empty = QueueState(0)
     }
 }
