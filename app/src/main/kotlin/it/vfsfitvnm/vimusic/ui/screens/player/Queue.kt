@@ -115,7 +115,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
-import io.ktor.http.ContentType
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -414,7 +413,7 @@ fun Queue(
                                 Column(modifier = Modifier.shimmer()) {
                                     repeat(3) { index ->
                                         SongItemPlaceholder(
-                                            thumbnailSize = Dimensions.thumbnails.song,
+             thumbnailSize = Dimensions.thumbnails.song,
                                             modifier = Modifier
                                                 .alpha(1f - index * 0.125f)
                                                 .fillMaxWidth()
@@ -567,32 +566,35 @@ fun Queue(
                                             Spacer(modifier = Modifier.height(160.dp))
 
                                         playlistPreviews?.forEach { playlistPreview ->
-    MenuEntry(
-        icon = R.drawable.playlist,
-        text = playlistPreview.playlist.name,
-        secondaryText = pluralStringResource(
-            id = R.plurals.song_count_plural,
-            count = playlistPreview.songCount,
-            playlistPreview.songCount
-        ),
-        onClick = {
-            menuState.hide()
-            addToPlaylist(
-                playlistPreview.playlist,
-                0 // masukin lagu baru ke index paling atas
-            )
+                                            MenuEntry(
+                                                icon = R.drawable.playlist,
+                                                text = playlistPreview.playlist.name,
+                                                secondaryText = pluralStringResource(
+                                                    id = R.plurals.song_count_plural,
+                                                    count = playlistPreview.songCount, 0
+                                                    playlistPreview.songCount, 0
+                                                ),
+                                                onClick = {
+                                                    menuState.hide()
+                                                    addToPlaylist(
+                                                        playlistPreview.playlist, 0
+                                                        playlistPreview.songCount, 0
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            .background(colorPalette.background1)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+            }
         }
-    )
+    }
 }
 
-// pastikan blok ini diakhiri dengan benar
-Box(
-    modifier = Modifier
-        .background(colorPalette.background1)
-        .padding(horizontal = 16.dp, vertical = 8.dp)
-) {
-    // isi konten box kalau ada, kalau kosong biarin {} aja
-}
 @JvmInline
 private value class ContentType private constructor(val value: Int) {
     companion object {
