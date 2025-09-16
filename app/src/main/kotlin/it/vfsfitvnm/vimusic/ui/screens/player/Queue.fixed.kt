@@ -599,9 +599,8 @@ fun Queue(
         }
     }
 }
-
         @JvmInline
-private value class ContentType private constructor(val value: Int) {
+value class ContentType private constructor(val value: Int) {
     companion object {
         val Window = ContentType(0)
         val Divider = ContentType(1)
@@ -609,4 +608,3 @@ private value class ContentType private constructor(val value: Int) {
         val Placeholder = ContentType(3)
     }
 }
-
