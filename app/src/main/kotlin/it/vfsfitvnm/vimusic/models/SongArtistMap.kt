@@ -24,6 +24,6 @@ import androidx.room.ForeignKey
     ]
 )
 data class SongArtistMap(
-    @ColumnInfo(index = true) val songId: String,
+    @ColumnInfo(index = true) val songId: Long,
     @ColumnInfo(index = true) val artistId: String
 )
