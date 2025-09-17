@@ -591,12 +591,13 @@ fun Queue(
                                             }
 
                             }
-                                    Modifier.background(color = Palette.background1):modifier
+                                    Modifier.background(color:Palette.background1):modifier
                             .padding(horizontal = 16.dp, vertical = 8.dp)
+                                }
                                 }
                 }
             )
-                    )
+                }
                 }
         }
     }
