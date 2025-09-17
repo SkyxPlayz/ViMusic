@@ -595,13 +595,16 @@ fun Queue(
                             fun modifier.padding(horizontal = 16.dp, vertical = 8.dp): modifier
                                 }
                                 }
+                            )
                 }
             )
+                    )
                 }
                 }
         }
     }
 }
+)
 }
 @JvmInline
 value class QueueState(val value: Int) {
