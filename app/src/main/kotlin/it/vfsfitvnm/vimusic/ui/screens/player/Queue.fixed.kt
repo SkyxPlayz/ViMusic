@@ -586,20 +586,17 @@ fun Queue(
                                                     onClick = {
                                                         menuState.hide()
                                                         addToPlaylist(playlistPreview.playlist, 0)
-                                                    }
-                                                )
-                                            }
-
-                            }
-                                    Modifier
-.background(black.background1)
-.padding(horizontal = 16.dp, vertical = 8.dp)
+                                                }
+                                            )
+                                        }
+                                    }
                                 }
+                            }
+                            .background(colorPalette.background1)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+            }
+        }
+    }
 
-                            },
-                            
-@JvmInline
-value class QueueState(val value: Int) {
-    companion object {
-        val Empty = QueueState(0) }
-})
