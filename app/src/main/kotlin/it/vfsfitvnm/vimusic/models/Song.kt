@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Immutable
 @Entity
 data class Song(
-    @PrimaryKey val id: String,
+    @PrimaryKey val id: Long,
     val title: String,
     val artistsText: String? = null,
     val durationText: String?,
