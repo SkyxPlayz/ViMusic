@@ -26,7 +26,7 @@ import androidx.room.PrimaryKey
 )
 data class SongPlaylistMap(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val songId: String,
+    val songId: Long,
     val playlistId: Long,
     val position: Int
 )
