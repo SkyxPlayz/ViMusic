@@ -596,7 +596,8 @@ fun Queue(
 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 }
 
-                                
+                            }
+                            
 @JvmInline
 value class QueueState(val value: Int) {
     companion object {
