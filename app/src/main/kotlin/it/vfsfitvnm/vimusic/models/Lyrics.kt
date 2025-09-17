@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class Lyrics(
-    @PrimaryKey val songId: String,
+    @PrimaryKey val songId: Long,
     val fixed: String?,
     val synced: String?,
     val startTime: Long? = null
