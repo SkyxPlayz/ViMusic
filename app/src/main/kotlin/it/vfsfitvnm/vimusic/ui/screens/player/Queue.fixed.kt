@@ -592,7 +592,7 @@ fun Queue(
 
                             }
                                     Modifier
-.background(Black.background1)
+.background(black.background1)
 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 }
 
@@ -602,4 +602,4 @@ fun Queue(
 value class QueueState(val value: Int) {
     companion object {
         val Empty = QueueState(0) }
-}
+})
