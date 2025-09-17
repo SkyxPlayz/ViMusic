@@ -600,7 +600,7 @@ fun Queue(
         }
     }
 }
-
+}
 @JvmInline
 value class QueueState(val value: Int) {
     companion object {
