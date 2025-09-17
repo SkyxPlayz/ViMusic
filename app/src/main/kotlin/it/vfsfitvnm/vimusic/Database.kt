@@ -239,19 +239,19 @@ interface Database {
     fun clearQueries()
 
     @Query("SELECT * FROM Song WHERE id = :id")
-    fun song(id: String): Flow<Song?>
+    fun song(id: Long): Flow<Song?>
 
     @Query("SELECT likedAt FROM Song WHERE id = :songId")
-    fun likedAt(songId: String): Flow<Long?>
+    fun likedAt(songId: Long): Flow<Long?>
 
     @Query("UPDATE Song SET likedAt = :likedAt WHERE id = :songId")
-    fun like(songId: String, likedAt: Long?): Int
+    fun like(songId: Long, likedAt: Long?): Int
 
     @Query("UPDATE Song SET durationText = :durationText WHERE id = :songId")
-    fun updateDurationText(songId: String, durationText: String): Int
+    fun updateDurationText(songId: Long, durationText: String): Int
 
     @Query("SELECT * FROM Lyrics WHERE songId = :songId")
-    fun lyrics(songId: String): Flow<Lyrics?>
+    fun lyrics(songId: Long): Flow<Lyrics?>
 
     @Query("SELECT * FROM Artist WHERE id = :id")
     fun artist(id: String): Flow<Artist?>
@@ -599,7 +599,7 @@ interface Database {
     suspend fun blacklistedIds(): List<String>
 
     @Query("SELECT blacklisted FROM Song WHERE id = :songId")
-    fun blacklisted(songId: String): Flow<Boolean>
+    fun blacklisted(songId: Long): Flow<Boolean>
 
     @Query("SELECT COUNT (*) FROM Song where blacklisted")
     fun blacklistLength(): Flow<Int>
@@ -610,7 +610,7 @@ interface Database {
 
     @Transaction
     @Query("UPDATE Song SET blacklisted = NOT blacklisted WHERE id = :songId")
-    fun toggleBlacklist(songId: String)
+    fun toggleBlacklist(songId: Long)
 
     suspend fun filterBlacklistedSongs(songs: List<MediaItem>): List<MediaItem> {
         val blacklistedIds = blacklistedIds()
@@ -638,7 +638,7 @@ interface Database {
     }
 
     @Query("SELECT position FROM SongPlaylistMap WHERE songId = :songId AND playlistId = :playlistId LIMIT 1")
-    fun getPositionInPlaylist(songId: String, playlistId: Long): Int?
+    fun getPositionInPlaylist(songId: Long, playlistId: Long): Int?
 
     @Query("DELETE FROM SongPlaylistMap WHERE playlistId = :playlistId AND position = :position")
     fun deleteFromPlaylistAtPosition(playlistId: Long, position: Int)
@@ -653,22 +653,22 @@ interface Database {
     fun clearAlbum(id: String)
 
     @Query("SELECT loudnessDb FROM Format WHERE songId = :songId")
-    fun loudnessDb(songId: String): Flow<Float?>
+    fun loudnessDb(songId: Long): Flow<Float?>
 
     @Query("SELECT Song.loudnessBoost FROM Song WHERE id = :songId")
-    fun loudnessBoost(songId: String): Flow<Float?>
+    fun loudnessBoost(songId: Long): Flow<Float?>
 
     @Query("UPDATE Song SET loudnessBoost = :loudnessBoost WHERE id = :songId")
-    fun setLoudnessBoost(songId: String, loudnessBoost: Float?)
+    fun setLoudnessBoost(songId: Long, loudnessBoost: Float?)
 
     @Query("SELECT * FROM Song WHERE title LIKE :query OR artistsText LIKE :query")
     fun search(query: String): Flow<List<Song>>
 
     @Query("SELECT albumId AS id, NULL AS name FROM SongAlbumMap WHERE songId = :songId")
-    suspend fun songAlbumInfo(songId: String): Info?
+    suspend fun songAlbumInfo(songId: Long): Info?
 
     @Query("SELECT id, name FROM Artist LEFT JOIN SongArtistMap ON id = artistId WHERE songId = :songId")
-    suspend fun songArtistInfo(songId: String): List<Info>
+    suspend fun songArtistInfo(songId: Long): List<Info>
 
     @Transaction
     @Query(
@@ -714,7 +714,7 @@ interface Database {
     fun clearEvents()
 
     @Query("DELETE FROM Event WHERE songId = :songId")
-    fun clearEventsFor(songId: String)
+    fun clearEventsFor(songId: Long)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     @Throws(SQLException::class)
