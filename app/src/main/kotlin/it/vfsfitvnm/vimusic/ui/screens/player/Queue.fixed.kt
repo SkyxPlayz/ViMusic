@@ -592,9 +592,11 @@ fun Queue(
 
                             }
                                     Modifier
-    .background(Palette.background1)
-    .padding(horizontal = 16.dp, vertical = 8.dp)
+.background(Black.background1)
+.padding(horizontal = 16.dp, vertical = 8.dp)
                                 }
+
+                                
 @JvmInline
 value class QueueState(val value: Int) {
     companion object {
