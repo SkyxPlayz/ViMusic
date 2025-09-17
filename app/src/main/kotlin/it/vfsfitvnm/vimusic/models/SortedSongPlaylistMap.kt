@@ -5,7 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 
 @Immutable
-@DatabaseView("SELECT * FROM SongPlaylistMap ORDER BY position")
+@DatabaseView("SELECT * FROM SongPlaylistMap ORDER BY DESC")
 data class SortedSongPlaylistMap(
     @ColumnInfo(index = true) val songId: String,
     @ColumnInfo(index = true) val playlistId: Long,
