@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class Format(
-    @PrimaryKey val songId: Long,
+    @PrimaryKey val songId: String,
     val itag: Int? = null,
     val mimeType: String? = null,
     val bitrate: Long? = null,
