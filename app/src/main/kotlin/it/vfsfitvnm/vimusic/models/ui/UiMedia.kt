@@ -4,7 +4,7 @@ import androidx.media3.common.MediaItem
 import it.vfsfitvnm.core.ui.utils.songBundle
 
 data class UiMedia(
-    val id: String,
+    val id: Long,
     val title: String,
     val artist: String,
     val duration: Long,
