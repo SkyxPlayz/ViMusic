@@ -490,7 +490,7 @@ interface Database {
         LIMIT 4
         """
     )
-    fun playlistThumbnailUrls(id: String): Flow<List<Long?>>
+    fun playlistThumbnailUrls(id: Long): Flow<List<String?>>
 
     @Transaction
     @Query(
