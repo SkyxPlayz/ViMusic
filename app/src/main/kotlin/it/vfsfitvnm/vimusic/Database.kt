@@ -1116,8 +1116,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     val lyricsValues = ContentValues(3)
                     while (cursor.moveToNext()) {
                         lyricsValues.put("songId", cursor.getLong(0))
-                        lyricsValues.put("fixed", cursor.getLong(1))
-                        lyricsValues.put("synced", cursor.getLong(2))
+                        lyricsValues.put("fixed", cursor.getString(1))
+                        lyricsValues.put("synced", cursor.getString(2))
                         db.insert("Lyrics", CONFLICT_IGNORE, lyricsValues)
                     }
                 }
