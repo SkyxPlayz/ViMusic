@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Immutable
 @Entity
 data class Artist(
-    @PrimaryKey val id: Long,
+    @PrimaryKey val id: String,
     val name: String? = null,
     val thumbnailUrl: String? = null,
     val timestamp: Long? = null,
