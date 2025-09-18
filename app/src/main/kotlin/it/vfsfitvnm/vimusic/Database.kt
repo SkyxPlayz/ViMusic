@@ -774,7 +774,7 @@ interface Database {
                 if (artistNames.size == artistIds.size) insert(
                     artistNames.mapIndexed { index, artistName ->
                         Artist(
-                            id = artistIds[index],
+                            id = artistIds[index].toLong(),
                             name = artistName
                         )
                     },
