@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Immutable
 @Entity
 data class Album(
-    @PrimaryKey val id: Long,
+    @PrimaryKey val id: String,
     val title: String? = null,
     val description: String? = null,
     val thumbnailUrl: String? = null,
