@@ -486,7 +486,7 @@ interface Database {
         SELECT thumbnailUrl FROM Song
         JOIN SongPlaylistMap ON Song.id = SongPlaylistMap.songId
         WHERE playlistId = :id
-        ORDER BY position
+        ORDER BY position DESC
         LIMIT 4
         """
     )
