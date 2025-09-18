@@ -230,7 +230,7 @@ interface Database {
     fun clearQueue()
 
     @Query("SELECT * FROM SearchQuery WHERE `query` LIKE :query ORDER BY id DESC")
-    fun queries(query: String): Flow<List<SearchQuery>>
+    fun queries(query: Long): Flow<List<SearchQuery>>
 
     @Query("SELECT COUNT (*) FROM SearchQuery")
     fun queriesCount(): Flow<Int>
@@ -248,13 +248,13 @@ interface Database {
     fun like(songId: Long, likedAt: Long?): Int
 
     @Query("UPDATE Song SET durationText = :durationText WHERE id = :songId")
-    fun updateDurationText(songId: Long, durationText: String): Int
+    fun updateDurationText(songId: Long, durationText: Long): Int
 
     @Query("SELECT * FROM Lyrics WHERE songId = :songId")
     fun lyrics(songId: Long): Flow<Lyrics?>
 
     @Query("SELECT * FROM Artist WHERE id = :id")
-    fun artist(id: String): Flow<Artist?>
+    fun artist(id: Long): Flow<Artist?>
 
     @Query("SELECT * FROM Artist WHERE bookmarkedAt IS NOT NULL ORDER BY name COLLATE NOCASE DESC")
     fun artistsByNameDesc(): Flow<List<Artist>>
@@ -281,7 +281,7 @@ interface Database {
     }
 
     @Query("SELECT * FROM Album WHERE id = :id")
-    fun album(id: String): Flow<Album?>
+    fun album(id: Long): Flow<Album?>
 
     @Transaction
     @Query(
@@ -294,7 +294,7 @@ interface Database {
         """
     )
     @RewriteQueriesToDropUnusedColumns
-    fun albumSongs(albumId: String): Flow<List<Song>>
+    fun albumSongs(albumId: Long): Flow<List<Song>>
 
     @Query("SELECT * FROM Album WHERE bookmarkedAt IS NOT NULL ORDER BY title COLLATE NOCASE ASC")
     fun albumsByTitleAsc(): Flow<List<Album>>
@@ -332,7 +332,7 @@ interface Database {
     }
 
     @Query("UPDATE Song SET totalPlayTimeMs = totalPlayTimeMs + :addition WHERE id = :id")
-    fun incrementTotalPlayTimeMs(id: String, addition: Long)
+    fun incrementTotalPlayTimeMs(id: Long, addition: Long)
 
     @Query("SELECT * FROM PipedSession")
     fun pipedSessions(): Flow<List<PipedSession>>
@@ -490,7 +490,7 @@ interface Database {
         LIMIT 4
         """
     )
-    fun playlistThumbnailUrls(id: Long): Flow<List<String?>>
+    fun playlistThumbnailUrls(id: Long): Flow<List<Long?>>
 
     @Transaction
     @Query(
@@ -503,7 +503,7 @@ interface Database {
         """
     )
     @RewriteQueriesToDropUnusedColumns
-    fun artistSongs(artistId: String): Flow<List<Song>>
+    fun artistSongs(artistId: Long): Flow<List<Song>>
 
     @Query("SELECT * FROM Format WHERE songId = :songId")
     fun format(songId: Long): Flow<Format?>
@@ -596,7 +596,7 @@ interface Database {
     }
 
     @Query("SELECT id FROM Song WHERE blacklisted")
-    suspend fun blacklistedIds(): List<String>
+    suspend fun blacklistedIds(): List<Long>
 
     @Query("SELECT blacklisted FROM Song WHERE id = :songId")
     fun blacklisted(songId: Long): Flow<Boolean>
@@ -650,7 +650,7 @@ interface Database {
     fun clearPlaylist(id: Long)
 
     @Query("DELETE FROM SongAlbumMap WHERE albumId = :id")
-    fun clearAlbum(id: String)
+    fun clearAlbum(id: Long)
 
     @Query("SELECT loudnessDb FROM Format WHERE songId = :songId")
     fun loudnessDb(songId: Long): Flow<Float?>
@@ -662,7 +662,7 @@ interface Database {
     fun setLoudnessBoost(songId: Long, loudnessBoost: Float?)
 
     @Query("SELECT * FROM Song WHERE title LIKE :query OR artistsText LIKE :query")
-    fun search(query: String): Flow<List<Song>>
+    fun search(query: Long): Flow<List<Song>>
 
     @Query("SELECT albumId AS id, NULL AS name FROM SongAlbumMap WHERE songId = :songId")
     suspend fun songAlbumInfo(songId: Long): Info?
@@ -752,8 +752,8 @@ interface Database {
         val extras = mediaItem.mediaMetadata.extras?.songBundle
         val song = Song(
             id = mediaItem.mediaId,
-            title = mediaItem.mediaMetadata.title?.toString().orEmpty(),
-            artistsText = mediaItem.mediaMetadata.artist?.toString(),
+            title = mediaItem.mediaMetadata.title?.toLong().orEmpty(),
+            artistsText = mediaItem.mediaMetadata.artist?.toLong(),
             durationText = extras?.durationText,
             thumbnailUrl = mediaItem.mediaMetadata.artworkUri?.toString(),
             explicit = extras?.explicit == true
@@ -933,8 +933,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             ).use { cursor ->
                 val albumValues = ContentValues(2)
                 while (cursor.moveToNext()) {
-                    albumValues.put("id", cursor.getString(0))
-                    albumValues.put("title", cursor.getString(1))
+                    albumValues.put("id", cursor.getLong(0))
+                    albumValues.put("title", cursor.getLong(1))
                     db.insert("Album", CONFLICT_IGNORE, albumValues)
 
                     db.execSQL(
@@ -958,13 +958,13 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             ).use { cursor ->
                 val songValues = ContentValues(1)
                 while (cursor.moveToNext()) {
-                    songValues.put("artistsText", cursor.getString(0))
+                    songValues.put("artistsText", cursor.getLong(0))
                     db.update(
                         table = "Song",
                         conflictAlgorithm = CONFLICT_IGNORE,
                         values = songValues,
                         whereClause = "id = ?",
-                        whereArgs = arrayOf(cursor.getString(1))
+                        whereArgs = arrayOf(cursor.getLong(1))
                     )
                 }
             }
@@ -980,8 +980,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             ).use { cursor ->
                 val artistValues = ContentValues(2)
                 while (cursor.moveToNext()) {
-                    artistValues.put("id", cursor.getString(0))
-                    artistValues.put("name", cursor.getString(1))
+                    artistValues.put("id", cursor.getLong(0))
+                    artistValues.put("name", cursor.getLong(1))
                     db.insert("Artist", CONFLICT_IGNORE, artistValues)
 
                     db.execSQL(
@@ -1005,7 +1005,7 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                 val songAlbumMapValues = ContentValues(2)
                 while (cursor.moveToNext()) {
                     songAlbumMapValues.put("songId", cursor.getLong(0))
-                    songAlbumMapValues.put("albumId", cursor.getString(1))
+                    songAlbumMapValues.put("albumId", cursor.getLong(1))
                     db.insert("SongAlbumMap", CONFLICT_IGNORE, songAlbumMapValues)
                 }
             }
@@ -1115,8 +1115,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                     val lyricsValues = ContentValues(3)
                     while (cursor.moveToNext()) {
                         lyricsValues.put("songId", cursor.getLong(0))
-                        lyricsValues.put("fixed", cursor.getString(1))
-                        lyricsValues.put("synced", cursor.getString(2))
+                        lyricsValues.put("fixed", cursor.getLong(1))
+                        lyricsValues.put("synced", cursor.getLong(2))
                         db.insert("Lyrics", CONFLICT_IGNORE, lyricsValues)
                     }
                 }
