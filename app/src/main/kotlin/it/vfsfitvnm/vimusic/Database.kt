@@ -248,7 +248,7 @@ interface Database {
     fun like(songId: Long, likedAt: Long?): Int
 
     @Query("UPDATE Song SET durationText = :durationText WHERE id = :songId")
-    fun updateDurationText(songId: Long, durationText: Long): Int
+    fun updateDurationText(songId: Long, durationText: String): Int
 
     @Query("SELECT * FROM Lyrics WHERE songId = :songId")
     fun lyrics(songId: Long): Flow<Lyrics?>
@@ -281,7 +281,7 @@ interface Database {
     }
 
     @Query("SELECT * FROM Album WHERE id = :id")
-    fun album(id: Long): Flow<Album?>
+    fun album(id: String): Flow<Album?>
 
     @Transaction
     @Query(
@@ -294,7 +294,7 @@ interface Database {
         """
     )
     @RewriteQueriesToDropUnusedColumns
-    fun albumSongs(albumId: Long): Flow<List<Song>>
+    fun albumSongs(albumId: String): Flow<List<Song>>
 
     @Query("SELECT * FROM Album WHERE bookmarkedAt IS NOT NULL ORDER BY title COLLATE NOCASE ASC")
     fun albumsByTitleAsc(): Flow<List<Album>>
@@ -332,7 +332,7 @@ interface Database {
     }
 
     @Query("UPDATE Song SET totalPlayTimeMs = totalPlayTimeMs + :addition WHERE id = :id")
-    fun incrementTotalPlayTimeMs(id: Long, addition: Long)
+    fun incrementTotalPlayTimeMs(id: String, addition: Long)
 
     @Query("SELECT * FROM PipedSession")
     fun pipedSessions(): Flow<List<PipedSession>>
@@ -490,7 +490,7 @@ interface Database {
         LIMIT 4
         """
     )
-    fun playlistThumbnailUrls(id: Long): Flow<List<Long?>>
+    fun playlistThumbnailUrls(id: String): Flow<List<Long?>>
 
     @Transaction
     @Query(
@@ -503,7 +503,7 @@ interface Database {
         """
     )
     @RewriteQueriesToDropUnusedColumns
-    fun artistSongs(artistId: Long): Flow<List<Song>>
+    fun artistSongs(artistId: String): Flow<List<Song>>
 
     @Query("SELECT * FROM Format WHERE songId = :songId")
     fun format(songId: Long): Flow<Format?>
@@ -662,7 +662,7 @@ interface Database {
     fun setLoudnessBoost(songId: Long, loudnessBoost: Float?)
 
     @Query("SELECT * FROM Song WHERE title LIKE :query OR artistsText LIKE :query")
-    fun search(query: Long): Flow<List<Song>>
+    fun search(query: String): Flow<List<Song>>
 
     @Query("SELECT albumId AS id, NULL AS name FROM SongAlbumMap WHERE songId = :songId")
     suspend fun songAlbumInfo(songId: Long): Info?
@@ -753,7 +753,7 @@ interface Database {
         val song = Song(
             id = mediaItem.mediaId,
             title = mediaItem.mediaMetadata.title?.toLong().orEmpty(),
-            artistsText = mediaItem.mediaMetadata.artist?.toLong(),
+            artistsText = mediaItem.mediaMetadata.artist?.toString(),
             durationText = extras?.durationText,
             thumbnailUrl = mediaItem.mediaMetadata.artworkUri?.toString(),
             explicit = extras?.explicit == true
@@ -933,8 +933,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             ).use { cursor ->
                 val albumValues = ContentValues(2)
                 while (cursor.moveToNext()) {
-                    albumValues.put("id", cursor.getLong(0))
-                    albumValues.put("title", cursor.getLong(1))
+                    albumValues.put("id", cursor.getString(0))
+                    albumValues.put("title", cursor.getString(1))
                     db.insert("Album", CONFLICT_IGNORE, albumValues)
 
                     db.execSQL(
@@ -980,8 +980,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             ).use { cursor ->
                 val artistValues = ContentValues(2)
                 while (cursor.moveToNext()) {
-                    artistValues.put("id", cursor.getLong(0))
-                    artistValues.put("name", cursor.getLong(1))
+                    artistValues.put("id", cursor.getString(0))
+                    artistValues.put("name", cursor.getString(1))
                     db.insert("Artist", CONFLICT_IGNORE, artistValues)
 
                     db.execSQL(
