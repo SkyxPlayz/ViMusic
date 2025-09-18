@@ -506,7 +506,7 @@ interface Database {
     fun artistSongs(artistId: String): Flow<List<Song>>
 
     @Query("SELECT * FROM Format WHERE songId = :songId")
-    fun format(songId: String): Flow<Format?>
+    fun format(songId: Long): Flow<Format?>
 
     @Transaction
     @Query(
@@ -1004,7 +1004,7 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             db.query(SimpleSQLiteQuery("SELECT id, albumId FROM Song;")).use { cursor ->
                 val songAlbumMapValues = ContentValues(2)
                 while (cursor.moveToNext()) {
-                    songAlbumMapValues.put("songId", cursor.getString(0))
+                    songAlbumMapValues.put("songId", cursor.getLong(0))
                     songAlbumMapValues.put("albumId", cursor.getString(1))
                     db.insert("SongAlbumMap", CONFLICT_IGNORE, songAlbumMapValues)
                 }
@@ -1050,7 +1050,7 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                 .use { cursor ->
                     val formatValues = ContentValues(3)
                     while (cursor.moveToNext()) {
-                        formatValues.put("songId", cursor.getString(0))
+                        formatValues.put("songId", cursor.getLong(0))
                         formatValues.put("loudnessDb", cursor.getFloatOrNull(1))
                         formatValues.put("contentLength", cursor.getFloatOrNull(2))
                         db.insert("Format", CONFLICT_IGNORE, formatValues)
@@ -1114,7 +1114,7 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                 .use { cursor ->
                     val lyricsValues = ContentValues(3)
                     while (cursor.moveToNext()) {
-                        lyricsValues.put("songId", cursor.getString(0))
+                        lyricsValues.put("songId", cursor.getLong(0))
                         lyricsValues.put("fixed", cursor.getString(1))
                         lyricsValues.put("synced", cursor.getString(2))
                         db.insert("Lyrics", CONFLICT_IGNORE, lyricsValues)
