@@ -614,7 +614,7 @@ interface Database {
 
     suspend fun filterBlacklistedSongs(songs: List<MediaItem>): List<MediaItem> {
         val blacklistedIds = blacklistedIds()
-        return songs.filter { it.mediaId !in blacklistedIds }
+        return songs.filter { it.Id !in blacklistedIds }
     }
 
     @Transaction
