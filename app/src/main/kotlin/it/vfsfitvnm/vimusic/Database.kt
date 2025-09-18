@@ -230,7 +230,7 @@ interface Database {
     fun clearQueue()
 
     @Query("SELECT * FROM SearchQuery WHERE `query` LIKE :query ORDER BY id DESC")
-    fun queries(query: Long): Flow<List<SearchQuery>>
+    fun queries(query: String): Flow<List<SearchQuery>>
 
     @Query("SELECT COUNT (*) FROM SearchQuery")
     fun queriesCount(): Flow<Int>
@@ -239,22 +239,22 @@ interface Database {
     fun clearQueries()
 
     @Query("SELECT * FROM Song WHERE id = :id")
-    fun song(id: Long): Flow<Song?>
+    fun song(id: String): Flow<Song?>
 
     @Query("SELECT likedAt FROM Song WHERE id = :songId")
-    fun likedAt(songId: Long): Flow<Long?>
+    fun likedAt(songId: String): Flow<Long?>
 
     @Query("UPDATE Song SET likedAt = :likedAt WHERE id = :songId")
-    fun like(songId: Long, likedAt: Long?): Int
+    fun like(songId: String, likedAt: Long?): Int
 
     @Query("UPDATE Song SET durationText = :durationText WHERE id = :songId")
-    fun updateDurationText(songId: Long, durationText: String): Int
+    fun updateDurationText(songId: String, durationText: String): Int
 
     @Query("SELECT * FROM Lyrics WHERE songId = :songId")
-    fun lyrics(songId: Long): Flow<Lyrics?>
+    fun lyrics(songId: String): Flow<Lyrics?>
 
     @Query("SELECT * FROM Artist WHERE id = :id")
-    fun artist(id: Long): Flow<Artist?>
+    fun artist(id: String): Flow<Artist?>
 
     @Query("SELECT * FROM Artist WHERE bookmarkedAt IS NOT NULL ORDER BY name COLLATE NOCASE DESC")
     fun artistsByNameDesc(): Flow<List<Artist>>
@@ -340,7 +340,7 @@ interface Database {
     @Query("SELECT * FROM Playlist WHERE id = :id")
     fun playlist(id: Long): Flow<Playlist?>
 
-    fun playlistSongs(id: Long, sortBy: SongSortBy, sortOrder: SortOrder): Flow<List<Song>> {
+    fun playlistSongs(id: Long, sortBy: SongSortBy, sortOrder: SortOrder): Flow<List<Song>?> {
         return when (sortBy) {
             SongSortBy.Position -> when (sortOrder) {
                 SortOrder.Ascending -> _playlistSongsByPositionAsc(id)
@@ -362,28 +362,28 @@ interface Database {
     }
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY SongPlaylistMap.position ASC")
-    fun _playlistSongsByPositionAsc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByPositionAsc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY SongPlaylistMap.position DESC")
-    fun _playlistSongsByPositionDesc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByPositionDesc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY SongPlaylistMap.ROWID ASC")
-    fun _playlistSongsByDateAddedAsc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByDateAddedAsc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY SongPlaylistMap.ROWID DESC")
-    fun _playlistSongsByDateAddedDesc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByDateAddedDesc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY Song.title COLLATE NOCASE ASC")
-    fun _playlistSongsByTitleAsc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByTitleAsc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY Song.title COLLATE NOCASE DESC")
-    fun _playlistSongsByTitleDesc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByTitleDesc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY Song.totalPlayTimeMs ASC")
-    fun _playlistSongsByPlayTimeAsc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByPlayTimeAsc(id: Long): Flow<List<Song>?>
 
     @Transaction @Query("SELECT Song.* FROM SongPlaylistMap INNER JOIN Song on Song.id = SongPlaylistMap.songId WHERE playlistId = :id ORDER BY Song.totalPlayTimeMs DESC")
-    fun _playlistSongsByPlayTimeDesc(id: Long): Flow<List<Song>>
+    fun _playlistSongsByPlayTimeDesc(id: Long): Flow<List<Song>?>
 
     @Transaction
     @Query("SELECT * FROM Playlist WHERE id = :id")
@@ -506,7 +506,7 @@ interface Database {
     fun artistSongs(artistId: String): Flow<List<Song>>
 
     @Query("SELECT * FROM Format WHERE songId = :songId")
-    fun format(songId: Long): Flow<Format?>
+    fun format(songId: String): Flow<Format?>
 
     @Transaction
     @Query(
@@ -596,10 +596,10 @@ interface Database {
     }
 
     @Query("SELECT id FROM Song WHERE blacklisted")
-    suspend fun blacklistedIds(): List<Long>
+    suspend fun blacklistedIds(): List<String>
 
     @Query("SELECT blacklisted FROM Song WHERE id = :songId")
-    fun blacklisted(songId: Long): Flow<Boolean>
+    fun blacklisted(songId: String): Flow<Boolean>
 
     @Query("SELECT COUNT (*) FROM Song where blacklisted")
     fun blacklistLength(): Flow<Int>
@@ -610,11 +610,11 @@ interface Database {
 
     @Transaction
     @Query("UPDATE Song SET blacklisted = NOT blacklisted WHERE id = :songId")
-    fun toggleBlacklist(songId: Long)
+    fun toggleBlacklist(songId: String)
 
     suspend fun filterBlacklistedSongs(songs: List<MediaItem>): List<MediaItem> {
         val blacklistedIds = blacklistedIds()
-        return songs.filter { it.id !in blacklistedIds }
+        return songs.filter { it.mediaId !in blacklistedIds }
     }
 
     @Transaction
@@ -638,7 +638,7 @@ interface Database {
     }
 
     @Query("SELECT position FROM SongPlaylistMap WHERE songId = :songId AND playlistId = :playlistId LIMIT 1")
-    fun getPositionInPlaylist(songId: Long, playlistId: Long): Int?
+    fun getPositionInPlaylist(songId: String, playlistId: Long): Int?
 
     @Query("DELETE FROM SongPlaylistMap WHERE playlistId = :playlistId AND position = :position")
     fun deleteFromPlaylistAtPosition(playlistId: Long, position: Int)
@@ -650,25 +650,25 @@ interface Database {
     fun clearPlaylist(id: Long)
 
     @Query("DELETE FROM SongAlbumMap WHERE albumId = :id")
-    fun clearAlbum(id: Long)
+    fun clearAlbum(id: String)
 
     @Query("SELECT loudnessDb FROM Format WHERE songId = :songId")
-    fun loudnessDb(songId: Long): Flow<Float?>
+    fun loudnessDb(songId: String): Flow<Float?>
 
     @Query("SELECT Song.loudnessBoost FROM Song WHERE id = :songId")
-    fun loudnessBoost(songId: Long): Flow<Float?>
+    fun loudnessBoost(songId: String): Flow<Float?>
 
     @Query("UPDATE Song SET loudnessBoost = :loudnessBoost WHERE id = :songId")
-    fun setLoudnessBoost(songId: Long, loudnessBoost: Float?)
+    fun setLoudnessBoost(songId: String, loudnessBoost: Float?)
 
     @Query("SELECT * FROM Song WHERE title LIKE :query OR artistsText LIKE :query")
     fun search(query: String): Flow<List<Song>>
 
     @Query("SELECT albumId AS id, NULL AS name FROM SongAlbumMap WHERE songId = :songId")
-    suspend fun songAlbumInfo(songId: Long): Info?
+    suspend fun songAlbumInfo(songId: String): Info?
 
     @Query("SELECT id, name FROM Artist LEFT JOIN SongArtistMap ON id = artistId WHERE songId = :songId")
-    suspend fun songArtistInfo(songId: Long): List<Info>
+    suspend fun songArtistInfo(songId: String): List<Info>
 
     @Transaction
     @Query(
@@ -714,7 +714,7 @@ interface Database {
     fun clearEvents()
 
     @Query("DELETE FROM Event WHERE songId = :songId")
-    fun clearEventsFor(songId: Long)
+    fun clearEventsFor(songId: String)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     @Throws(SQLException::class)
@@ -751,7 +751,7 @@ interface Database {
     fun insert(mediaItem: MediaItem, block: (Song) -> Song = { it }) {
         val extras = mediaItem.mediaMetadata.extras?.songBundle
         val song = Song(
-            id = mediaItem.mediaId.toLong(),
+            id = mediaItem.mediaId,
             title = mediaItem.mediaMetadata.title?.toString().orEmpty(),
             artistsText = mediaItem.mediaMetadata.artist?.toString(),
             durationText = extras?.durationText,
@@ -763,8 +763,7 @@ interface Database {
 
         extras?.albumId?.let { albumId ->
             insert(
-                Album(id = albumId.toLong(),
-    title = mediaItem.mediaMetadata.albumTitle?.toString()),
+                Album(id = albumId, title = mediaItem.mediaMetadata.albumTitle?.toString()),
                 SongAlbumMap(songId = song.id, albumId = albumId, position = null)
             )
         }
@@ -774,7 +773,7 @@ interface Database {
                 if (artistNames.size == artistIds.size) insert(
                     artistNames.mapIndexed { index, artistName ->
                         Artist(
-                            id = artistIds[index].toLong(),
+                            id = artistIds[index],
                             name = artistName
                         )
                     },
@@ -959,13 +958,13 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             ).use { cursor ->
                 val songValues = ContentValues(1)
                 while (cursor.moveToNext()) {
-                    songValues.put("artistsText", cursor.getLong(0))
+                    songValues.put("artistsText", cursor.getString(0))
                     db.update(
                         table = "Song",
                         conflictAlgorithm = CONFLICT_IGNORE,
                         values = songValues,
                         whereClause = "id = ?",
-                        whereArgs = arrayOf(cursor.getLong(1))
+                        whereArgs = arrayOf(cursor.getString(1))
                     )
                 }
             }
@@ -1005,8 +1004,8 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
             db.query(SimpleSQLiteQuery("SELECT id, albumId FROM Song;")).use { cursor ->
                 val songAlbumMapValues = ContentValues(2)
                 while (cursor.moveToNext()) {
-                    songAlbumMapValues.put("songId", cursor.getLong(0))
-                    songAlbumMapValues.put("albumId", cursor.getLong(1))
+                    songAlbumMapValues.put("songId", cursor.getString(0))
+                    songAlbumMapValues.put("albumId", cursor.getString(1))
                     db.insert("SongAlbumMap", CONFLICT_IGNORE, songAlbumMapValues)
                 }
             }
@@ -1051,7 +1050,7 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                 .use { cursor ->
                     val formatValues = ContentValues(3)
                     while (cursor.moveToNext()) {
-                        formatValues.put("songId", cursor.getLong(0))
+                        formatValues.put("songId", cursor.getString(0))
                         formatValues.put("loudnessDb", cursor.getFloatOrNull(1))
                         formatValues.put("contentLength", cursor.getFloatOrNull(2))
                         db.insert("Format", CONFLICT_IGNORE, formatValues)
@@ -1115,7 +1114,7 @@ abstract class DatabaseInitializer protected constructor() : RoomDatabase() {
                 .use { cursor ->
                     val lyricsValues = ContentValues(3)
                     while (cursor.moveToNext()) {
-                        lyricsValues.put("songId", cursor.getLong(0))
+                        lyricsValues.put("songId", cursor.getString(0))
                         lyricsValues.put("fixed", cursor.getString(1))
                         lyricsValues.put("synced", cursor.getString(2))
                         db.insert("Lyrics", CONFLICT_IGNORE, lyricsValues)
