@@ -753,7 +753,7 @@ interface Database {
         val song = Song(
             id = mediaItem.mediaId.toLong(),
             title = mediaItem.mediaMetadata.title?.toString().orEmpty(),
-            artistsText = mediaItem.mediaMetadata.artist?.toLong(),
+            artistsText = mediaItem.mediaMetadata.artist?.toString(),
             durationText = extras?.durationText,
             thumbnailUrl = mediaItem.mediaMetadata.artworkUri?.toString(),
             explicit = extras?.explicit == true
@@ -763,7 +763,8 @@ interface Database {
 
         extras?.albumId?.let { albumId ->
             insert(
-                Album(id = albumId, title = mediaItem.mediaMetadata.albumTitle?.toString()),
+                Album(id = albumId.toLong(),
+    title = mediaItem.mediaMetadata.albumTitle?.toString()),
                 SongAlbumMap(songId = song.id, albumId = albumId, position = null)
             )
         }
