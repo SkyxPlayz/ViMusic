@@ -753,7 +753,7 @@ interface Database {
         val song = Song(
             id = mediaItem.mediaId.toLong(),
             title = mediaItem.mediaMetadata.title?.toString().orEmpty(),
-            artistsText = mediaItem.mediaMetadata.artist?.toString(),
+            artistsText = mediaItem.mediaMetadata.artist?.toLong(),
             durationText = extras?.durationText,
             thumbnailUrl = mediaItem.mediaMetadata.artworkUri?.toString(),
             explicit = extras?.explicit == true
