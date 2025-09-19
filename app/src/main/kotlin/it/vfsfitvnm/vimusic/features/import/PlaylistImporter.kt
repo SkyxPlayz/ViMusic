@@ -154,7 +154,7 @@ class PlaylistImporter {
                     if (newPlaylistId != -1L) {
                         songsToAdd.forEachIndexed { index, (song, artistsWithEndpoints) ->
                             // Use upsert to handle duplicates without crashing
-                            Database.instance.upsert(song)
+                            Database.instance.upsertPreserveLike(song)
 
                             artistsWithEndpoints.forEach { artistInfo ->
                                 val artistId = artistInfo.endpoint?.browseId
