@@ -230,39 +230,63 @@ fun HomeSongs(
                 }
             }
 
-            SongItem(
-    modifier = Modifier
-        .combinedClickable(
-            onLongClick = {
-                keyboardController?.hide()
-                menuState.display {
-                    InHistoryMediaItemMenu(
-                        song = song,
-                        onDismiss = menuState::hide,
-                        onHideFromDatabase = { hidingSong = song.id }
+            items(
+    items = filteredItems,
+    key = { song -> song.id }
+) { song ->
+    if (hidingSong == song.id) HideSongDialog(
+        song = song,
+        onDismiss = { hidingSong = null },
+        onConfirm = {
+            hidingSong = null
+            menuState.hide()
+        }
+    )
+
+    SongItem(
+        modifier = Modifier
+            .combinedClickable(
+                onLongClick = {
+                    keyboardController?.hide()
+                    menuState.display {
+                        InHistoryMediaItemMenu(
+                            song = song,
+                            onDismiss = menuState::hide,
+                            onHideFromDatabase = { hidingSong = song.id }
+                        )
+                    }
+                },
+                onClick = {
+                    keyboardController?.hide()
+                    binder?.stopRadio()
+                    binder?.player?.forcePlayAtIndex(
+                        items.map(Song::asMediaItem),
+                        items.indexOf(song)
                     )
                 }
-            },
-            onClick = {
-                keyboardController?.hide()
-                binder?.stopRadio()
-                binder?.player?.forcePlayAtIndex(
-                    items.map(Song::asMediaItem),
-                    items.indexOf(song)
-                )
-            }
-        )
-        .animateItem(),
-    song = song,
-    thumbnailSize = Dimensions.thumbnails.song,
-    isPlaying = playing && currentMediaId == song.id,
-    likedAt = song.likedAt, // inject likedAt
-    onToggleLike = {
-        transaction {
-            Database.instance.upsertPreserveLike(song.toggleLike())
+            )
+            .animateItem(),
+        song = song,
+        thumbnailSize = Dimensions.thumbnails.song,
+        isPlaying = playing && currentMediaId == song.id,
+        trailingContent = {
+            // ini tombol like/unlike
+            HeaderIconButton(
+                icon = if (song.likedAt != null) R.drawable.heart_filled else R.drawable.heart,
+                onClick = {
+                    transaction {
+                        if (song.likedAt != null) {
+                            Database.instance.delete(song.copy(likedAt = null))
+                        } else {
+                            Database.instance.upsert(song.copy(likedAt = System.currentTimeMillis()))
+                        }
+                    }
+                },
+                color = if (song.likedAt != null) Color.Red else colorPalette.text
+            )
         }
-    }
-)
+    )
+            }
                                 }
                                 animationJob.join()
                             } else it
