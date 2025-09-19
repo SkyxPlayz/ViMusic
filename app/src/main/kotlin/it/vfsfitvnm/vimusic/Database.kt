@@ -245,6 +245,15 @@ interface Database {
 @Query("SELECT * FROM Song WHERE id = :id")
 fun songNow(id: String): Song?
 
+    @Query("SELECT likedAt FROM Song WHERE id = :id")
+fun likedAt(id: String): Flow<Long?>
+
+    @Transaction
+fun toggleLike(song: Song) {
+    val updated = song.toggleLike()
+    upsertPreserveLike(updated)
+}
+
     @Query("SELECT likedAt FROM Song WHERE id = :songId")
     fun likedAt(songId: String): Flow<Long?>
 
