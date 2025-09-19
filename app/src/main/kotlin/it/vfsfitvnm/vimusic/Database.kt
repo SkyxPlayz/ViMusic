@@ -812,7 +812,17 @@ fun songNow(id: String): Song?
 
     // FIX: Add the missing upsert methods
     @Upsert
-    fun upsert(song: Song)
+fun rawUpsert(song: Song)
+
+@Transaction
+fun upsertPreserveLike(song: Song) {
+    val existing = songNow(song.id)
+    if (existing != null && existing.likedAt != null && song.likedAt == null) {
+        rawUpsert(song.copy(likedAt = existing.likedAt))
+    } else {
+        rawUpsert(song)
+    }
+}
 
     @Upsert
     fun upsert(songArtistMap: SongArtistMap)
