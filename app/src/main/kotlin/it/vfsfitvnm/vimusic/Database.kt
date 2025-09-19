@@ -241,6 +241,10 @@ interface Database {
     @Query("SELECT * FROM Song WHERE id = :id")
     fun song(id: String): Flow<Song?>
 
+    // tambahkan ini (synchronous query) sehingga kita bisa membaca record yg ada
+@Query("SELECT * FROM Song WHERE id = :id")
+fun songNow(id: String): Song?
+
     @Query("SELECT likedAt FROM Song WHERE id = :songId")
     fun likedAt(songId: String): Flow<Long?>
 
