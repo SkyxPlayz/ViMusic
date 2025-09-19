@@ -763,7 +763,7 @@ fun songNow(id: String): Song?
             explicit = extras?.explicit == true
         ).let(block)
 
-        upsert(song) // Use the new upsert method
+        upsertPreserveLike(song) // Use the new upsert method
 
         extras?.albumId?.let { albumId ->
             insert(
