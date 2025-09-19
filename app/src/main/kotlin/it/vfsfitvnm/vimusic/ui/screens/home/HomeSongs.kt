@@ -230,52 +230,39 @@ fun HomeSongs(
                 }
             }
 
-            items(
-                items = filteredItems,
-                key = { song -> song.id }
-            ) { song ->
-                if (hidingSong == song.id) HideSongDialog(
-                    song = song,
-                    onDismiss = { hidingSong = null },
-                    onConfirm = {
-                        hidingSong = null
-                        menuState.hide()
-                    }
+            SongItem(
+    modifier = Modifier
+        .combinedClickable(
+            onLongClick = {
+                keyboardController?.hide()
+                menuState.display {
+                    InHistoryMediaItemMenu(
+                        song = song,
+                        onDismiss = menuState::hide,
+                        onHideFromDatabase = { hidingSong = song.id }
+                    )
+                }
+            },
+            onClick = {
+                keyboardController?.hide()
+                binder?.stopRadio()
+                binder?.player?.forcePlayAtIndex(
+                    items.map(Song::asMediaItem),
+                    items.indexOf(song)
                 )
-
-                SongItem(
-                    modifier = Modifier
-                        .combinedClickable(
-                            onLongClick = {
-                                keyboardController?.hide()
-                                menuState.display {
-                                    InHistoryMediaItemMenu(
-                                        song = song,
-                                        onDismiss = menuState::hide,
-                                        onHideFromDatabase = { hidingSong = song.id }
-                                    )
-                                }
-                            },
-                            onClick = {
-                                keyboardController?.hide()
-                                binder?.stopRadio()
-                                binder?.player?.forcePlayAtIndex(
-                                    items.map(Song::asMediaItem),
-                                    items.indexOf(song)
-                                )
-                            }
-                        )
-                        .animateItem()
-                        .let {
-                            if (AppearancePreferences.swipeToHideSong) it.swipeToClose(
-                                key = filteredItems,
-                                requireUnconsumed = true
-                            ) { animationJob ->
-                                if (AppearancePreferences.swipeToHideSongConfirm)
-                                    hidingSong = song.id
-                                else {
-                                    if (!song.isLocal) binder?.cache?.removeResource(song.id)
-                                    transaction { Database.instance.delete(song) }
+            }
+        )
+        .animateItem(),
+    song = song,
+    thumbnailSize = Dimensions.thumbnails.song,
+    isPlaying = playing && currentMediaId == song.id,
+    likedAt = song.likedAt, // inject likedAt
+    onToggleLike = {
+        transaction {
+            Database.instance.upsertPreserveLike(song.toggleLike())
+        }
+    }
+)
                                 }
                                 animationJob.join()
                             } else it
