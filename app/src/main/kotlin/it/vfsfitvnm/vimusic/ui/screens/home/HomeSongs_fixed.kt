@@ -58,7 +58,7 @@ import it.vfsfitvnm.core.ui.Dimensions
 import it.vfsfitvnm.core.ui.LocalAppearance
 import it.vfsfitvnm.core.ui.onOverlay
 import it.vfsfitvnm.core.ui.overlay
-import it.vfsfitvnm.core.ui.FavotitesIcon
+import it.vfsfitvnm.core.ui.favoriteicons
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
