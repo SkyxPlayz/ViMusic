@@ -157,11 +157,30 @@ fun Queue(
     var shouldBePlaying by remember { mutableStateOf(binder.player.shouldBePlaying) }
 
     val lazyListState = rememberLazyListState()
-    val reorderingState = rememberReorderingState(
-        lazyListState = lazyListState,
-        key = windows,
-        onDragEnd = binder.player::moveMediaItem
-    )
+    val windowKeys = remember(windows) { windows.map { it.mediaItem.mediaId } }
+
+val reorderingState = rememberReorderingState(
+    lazyListState = lazyListState,
+    key = windowKeys, // list of stable keys
+    onDragEnd = { fromIndex, toIndex ->
+        // 1) update ExoPlayer queue
+        binder.player.moveMediaItem(fromIndex, toIndex)
+
+        // 2) persist order ke DB (jalankan di background)
+        // contoh: update SongPlaylistMap.position sesuai urutan baru
+        // (Lo harus sesuaikan: kalo queue itu bagian dari playlist tertentu, pake playlistId)
+        // kalau queue bukan playlist, skip bagian DB
+
+        // contoh pseudocode:
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            val newOrder = binder.player.currentTimeline.windows.map { it.mediaItem.mediaId }
+            // update DB: untuk setiap mediaId set posisi = index in newOrder
+            newOrder.forEachIndexed { idx, mediaId ->
+                // contoh: Database.instance.updateSongPosition(mediaId, playlistId, idx)
+            }
+        }
+    }
+)
 
     val visibleSuggestions by remember {
         derivedStateOf {
