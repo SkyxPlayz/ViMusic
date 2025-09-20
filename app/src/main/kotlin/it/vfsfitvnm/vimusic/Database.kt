@@ -459,6 +459,9 @@ fun toggleLike(song: Song) {
     )
     fun playlistPreviewsByDateAddedDesc(): Flow<List<PlaylistPreview>>
 
+    @Query("UPDATE SongPlaylistMap SET position = :position WHERE playlistId = :playlistId AND songId = :songId")
+fun updateSongPosition(playlistId: Long, songId: String, position: Int): Int
+
     @Transaction
     @Query(
         """
