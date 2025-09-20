@@ -291,7 +291,7 @@ fun Queue(
                     ) {
                         itemsIndexed(
     items = windows,
-    key = { _, window -> window.mediaItem.mediaId },
+    key = { _, window -> window.uid.hashcode() },
     ...
 ),
                             contentType = { _, _ -> ContentAlpha.Window }
