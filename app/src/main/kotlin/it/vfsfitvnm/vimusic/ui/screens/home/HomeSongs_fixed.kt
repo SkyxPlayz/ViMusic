@@ -286,12 +286,24 @@ fun HomeSongs(
                     } else null,
                     trailingContent = {
                         IconButton(
-                            isLiked = likedAt != null,
-                            onToggle = {
-                                transaction {
-                                    val updated = song.toggleLike()
-                                    Database.instance.upsertPreserveLike(updated)
-                                }
+    icon = if (likedAt == null) R.drawable.heart_outline else R.drawable.heart,
+    color = colorPalette.favoritesIcon,
+    onClick = {
+        query {
+            if (
+                Database.instance.like(
+                    songId = song.id,
+                    likedAt = if (likedAt == null) System.currentTimeMillis() else null
+                ) != 0
+            ) return@query
+
+            Database.instance.insert(song.asMediaItem, Song::toggleLike)
+        }
+    },
+    modifier = Modifier
+        .padding(all = 4.dp)
+        .size(18.dp)
+)
                             }
                         )
                     },
