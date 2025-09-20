@@ -285,7 +285,7 @@ fun HomeSongs(
                         }
                     } else null,
                     trailingContent = {
-                        LikeButton(
+                        IconButton(
                             isLiked = likedAt != null,
                             onToggle = {
                                 transaction {
