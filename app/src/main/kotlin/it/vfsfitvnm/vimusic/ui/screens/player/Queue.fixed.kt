@@ -274,8 +274,10 @@ fun Queue(
                         modifier = Modifier.nestedScroll(scrollConnection)
                     ) {
                         itemsIndexed(
-                            items = windows,
-                            key = { _, window -> window.uid.hashCode() },
+    items = windows,
+    key = { _, window -> window.mediaItem.mediaId },
+    ...
+),
                             contentType = { _, _ -> ContentAlpha.Window }
                         ) { i, window ->
                             val isPlayingThisMediaItem = mediaItemIndex == window.firstPeriodIndex
