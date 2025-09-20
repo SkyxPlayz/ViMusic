@@ -58,6 +58,7 @@ import it.vfsfitvnm.core.ui.Dimensions
 import it.vfsfitvnm.core.ui.LocalAppearance
 import it.vfsfitvnm.core.ui.onOverlay
 import it.vfsfitvnm.core.ui.overlay
+import it.vfsfitvnm.core.ui.FavotitesIcon
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -223,92 +224,68 @@ fun HomeSongs(
                 }
 
                 SongItem(
-                    modifier = Modifier
-                        .combinedClickable(
-                            onLongClick = {
-                                keyboardController?.hide()
-                                menuState.display {
-                                    InHistoryMediaItemMenu(
-                                        song = song,
-                                        onDismiss = menuState::hide,
-                                        onHideFromDatabase = { hidingSong = song.id }
-                                    )
-                                }
-                            },
-                            onClick = {
-                                keyboardController?.hide()
-                                binder?.stopRadio()
-                                binder?.player?.forcePlayAtIndex(
-                                    items.map(Song::asMediaItem),
-                                    items.indexOf(song)
-                                )
-                            }
-                        )
-                        .animateItem()
-                        .let {
-                            if (AppearancePreferences.swipeToHideSong) it.swipeToClose(
-                                key = filteredItems,
-                                requireUnconsumed = true
-                            ) { animationJob ->
-                                if (AppearancePreferences.swipeToHideSongConfirm)
-                                    hidingSong = song.id
-                                else {
-                                    if (!song.isLocal) binder?.cache?.removeResource(song.id)
-                                    transaction { Database.instance.delete(song) }
-                                }
-                                animationJob.join()
-                            } else it
-                        },
-                    song = song,
-                    thumbnailSize = Dimensions.thumbnails.song,
-                    onThumbnailContent = if (sortBy == SongSortBy.PlayTime) {
-                        {
-                            BasicText(
-                                text = song.formattedTotalPlayTime,
-                                style = typography.xxs.semiBold.center.color(colorPalette.onOverlay),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(Color.Transparent, colorPalette.overlay)
-                                        ),
-                                        shape = thumbnailShape.copy(
-                                            topStart = CornerSize(0.dp),
-                                            topEnd = CornerSize(0.dp)
-                                        )
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                                    .align(Alignment.BottomCenter)
-                            )
-                        }
-                    } else null,
-                    trailingContent = {
-                        IconButton(
-    icon = if (likedAt == null) R.drawable.heart_outline else R.drawable.heart,
-    color = colorPalette.favoritesIcon,
-    onClick = {
-        query {
-            if (
-                Database.instance.like(
-                    songId = song.id,
-                    likedAt = if (likedAt == null) System.currentTimeMillis() else null
-                ) != 0
-            ) return@query
-
-            Database.instance.insert(song.asMediaItem, Song::toggleLike)
-        }
-    },
     modifier = Modifier
-        .padding(all = 4.dp)
-        .size(18.dp)
-)
-                            }
-                        )
-                    },
-                    isPlaying = playing && currentMediaId == song.id
+        .combinedClickable(
+            onLongClick = {
+                keyboardController?.hide()
+                menuState.display {
+                    InHistoryMediaItemMenu(
+                        song = song,
+                        onDismiss = menuState::hide,
+                        onHideFromDatabase = { hidingSong = song.id }
+                    )
+                }
+            },
+            onClick = {
+                keyboardController?.hide()
+                binder?.stopRadio()
+                binder?.player?.forcePlayAtIndex(
+                    items.map(Song::asMediaItem),
+                    items.indexOf(song)
                 )
+            }
+        )
+        .animateItem()
+        .let {
+            if (AppearancePreferences.swipeToHideSong) it.swipeToClose(
+                key = filteredItems,
+                requireUnconsumed = true
+            ) { animationJob ->
+                if (AppearancePreferences.swipeToHideSongConfirm)
+                    hidingSong = song.id
+                else {
+                    if (!song.isLocal) binder?.cache?.removeResource(song.id)
+                    transaction { Database.instance.delete(song) }
+                }
+                animationJob.join()
+            } else it
+        },
+    song = song,
+    thumbnailSize = Dimensions.thumbnails.song,
+    trailingContent = {
+        IconButton(
+            icon = if (song.likedAt == null) R.drawable.heart_outline else R.drawable.heart,
+            color = colorPalette.favoritesIcon,
+            onClick = {
+                query {
+                    // toggle like on DB (mirip implementasi di MediaItemMenu)
+                    if (
+                        Database.instance.like(
+                            songId = song.id,
+                            likedAt = if (song.likedAt == null) System.currentTimeMillis() else null
+                        ) != 0
+                    ) return@query
+
+                    Database.instance.insert(song.asMediaItem, Song::toggleLike)
+                }
+            },
+            modifier = Modifier
+                .padding(all = 4.dp)
+                .size(18.dp)
+        )
+    },
+    isPlaying = playing && currentMediaId == song.id
+)
             }
         }
 
