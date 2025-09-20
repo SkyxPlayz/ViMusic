@@ -206,7 +206,7 @@ fun PlaylistSongList(
                 }
                 itemsIndexed(
                     items = playlistPage?.songsPage?.items ?: emptyList(),
-                    key = { index, song -> "${song.key}-$index" }
+                    key = { _, song -> song.key }
                 ) { index, song ->
                     SongItem(
                         song = song,
